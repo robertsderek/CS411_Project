@@ -19,3 +19,10 @@ Team 7's Groupt Project Proposal:
 * Weather API to list the upcoming weather for the month
 * Google Places API to reccomend activities nearby based on the weather 
 * Calendar stores planned out events like a regular calendar would 
+
+<h4> Mental Health GPT Therapist </h4> 
+
+* Facebook Authentication
+* OpenAI GPT API to clarify and understand what mood the user is in, possibly provide some advice
+* Spotify API to curate a playlist which will be based on the mood of the user
+* Mood history and previous curated playlists of each user is stored and tracked in a DB
