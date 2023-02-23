@@ -20,7 +20,7 @@ Team 7's Groupt Project Proposal:
 * Google Places API to reccomend activities nearby based on the weather 
 * Calendar stores planned out events like a regular calendar would 
 
-<h4> Mental Health GPT Therapist </h4> 
+<h4> Open AI Mood Playlist Curator </h4> 
 
 * Facebook Authentication
 * OpenAI GPT API to clarify and understand what mood the user is in, possibly provide some advice
