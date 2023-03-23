@@ -1,4 +1,4 @@
-<h1>User Story</h1>
+<h1>User Story 3:</h1>
 As a user, I want to see which events fits my schedule and matches my personal preferences
 
 <h2>Happy Path</h2>

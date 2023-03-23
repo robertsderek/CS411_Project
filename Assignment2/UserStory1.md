@@ -1,4 +1,4 @@
-<h1>User Story</h1>
+<h1>User Story 1:</h1>
 As a New User, I should be able to create an account using Facebook, otherwise I can just login.
 
 <h2>Happy Path</h2>

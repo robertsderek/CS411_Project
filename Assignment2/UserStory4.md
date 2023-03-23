@@ -1,4 +1,4 @@
-<h2> User Story 2: </h2>
+<h2> User Story 4: </h2>
 
 <h4> "As a user, I want to quickly filter by the type of activity I'm interested in" <h4>
 
