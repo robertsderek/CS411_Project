@@ -11,7 +11,26 @@ mongoose.connect("mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(() => console.log("Connected to DB")).catch(console.error);
+  .then(() => console.log("Connected to DB")).
+  catch(console.error);
+
+const Calendar_day = require('./models/calendar_model');
+
+app.get('/calendar', async (req, res) => {
+  const calendar = await Calendar_day.find();
+
+  res.json(calendar);
+});
+
+app.post('/calendar/new', (req, res) => {
+  const calendar_day = new Calendar_day( {
+    date: req.body.text
+  });
+
+  calendar_day.save()
+
+  res.json(calendar_day)
+});
 
 // app.get("/message", (req, res) => {
 //   res.json({ message: "Hello from server!" });

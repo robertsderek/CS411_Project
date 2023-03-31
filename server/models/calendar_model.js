@@ -7,12 +7,11 @@ const calendar_schema = Schema({
         require: true
     },
     content: {
-        type: String,
-        require: true
+        type: String
     },
 
 })
 
-const calendar_model = mongoose.model("calendar_model", calendar_schema);
+const calendar_day = mongoose.model("calendar_day", calendar_schema);
 
-module.exports(calendar_model);
+module.exports = calendar_day;
