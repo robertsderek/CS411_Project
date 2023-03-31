@@ -91,3 +91,4 @@ async function listEvents(auth) {
 }
 
 authorize().then(listEvents).catch(console.error);
+console.log("helo world")

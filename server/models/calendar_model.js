@@ -9,6 +9,9 @@ const calendar_schema = Schema({
     content: {
         type: String
     },
+    weather: {
+        type: String
+    }
 
 })
 
