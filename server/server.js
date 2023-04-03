@@ -34,6 +34,12 @@ app.post('/calendar/new', (req, res) => {
   res.json(calendar_day)
 });
 
+app.delete('/calendar/delete/:id', async (req, res) => {
+	const result = await Calendar_day.findByIdAndDelete(req.params.id);
+
+	res.json({result});
+});
+
 // app.get("/message", (req, res) => {
 //   res.json({ message: "Hello from server!" });
 // });

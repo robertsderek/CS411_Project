@@ -8,3 +8,6 @@ Content-Type: application/json
 {
     "text": "Friday"
 }
+
+###
+DELETE http://localhost:3001/calendar/delete/642a496815af14e721a0e6aa
