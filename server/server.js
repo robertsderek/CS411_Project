@@ -18,12 +18,18 @@ mongoose.connect("mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/
 
 const Calendar_day = require('./models/calendar_model');
 
+/**
+ * Finds all the available data within the calendar
+ */
 app.get('/calendar', async (req, res) => {
   const calendar = await Calendar_day.find();
 
   res.json(calendar);
 });
 
+/**
+ * Create a new calendar_day data
+ */
 app.post('/calendar/new', (req, res) => {
   const calendar_day = new Calendar_day( {
     date: req.body.text
@@ -34,6 +40,9 @@ app.post('/calendar/new', (req, res) => {
   res.json(calendar_day)
 });
 
+/**
+ * Delete existing calendar date by id
+ */
 app.delete('/calendar/delete/:id', async (req, res) => {
 	const result = await Calendar_day.findByIdAndDelete(req.params.id);
 
