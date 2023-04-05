@@ -32,7 +32,9 @@ app.get('/calendar', async (req, res) => {
  */
 app.post('/calendar/new', (req, res) => {
   const calendar_day = new Calendar_day( {
-    date: req.body.text
+    date: req.body['date'],
+    content: req.body['content'],
+    weather: req.body['weather']
   });
 
   calendar_day.save()
@@ -48,13 +50,5 @@ app.delete('/calendar/delete/:id', async (req, res) => {
 
 	res.json({result});
 });
-
-// app.get("/message", (req, res) => {
-//   res.json({ message: "Hello from server!" });
-// });
-
-// app.listen(8000, () => {
-//   console.log(`Server is running on port 8000.`);
-// });
 
 app.listen(3001, () => console.log("Server started on port 3001"));
