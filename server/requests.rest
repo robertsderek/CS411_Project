@@ -1,0 +1,15 @@
+GET http://localhost:3001/calendar
+
+###
+
+POST http://localhost:3001/calendar/new
+Content-Type: application/json
+
+{
+    "date": "Monday",
+    "content": "content-check",
+    "weather": "Sunny"
+}
+
+###
+DELETE http://localhost:3001/calendar/delete/642b720324fe7f81490ba7c5
