@@ -1,14 +1,13 @@
-const express = require("express");
-const cors = require("cors");
+const express = require('express');
 const app = express();
+const path = require('path');
+const React = require('react');
+const ReactDOMServer = require('react-dom/server');
+const { handleApiLoaded, MapComponent } = require('./server/googleplaces');
 
-app.use(cors());
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-app.get("/message", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
 
-app.listen(8000, () => {
-  console.log(`Server is running on port 8000.`);
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
