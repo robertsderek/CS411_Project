@@ -31,8 +31,10 @@ app.get('/calendar', async (req, res) => {
  * Create a new calendar_day data
  */
 app.post('/calendar/new', (req, res) => {
+  const currentDate = new Date()
+
   const calendar_day = new Calendar_day( {
-    date: req.body['date'],
+    date: currentDate,
     content: req.body['content'],
     weather: req.body['weather']
   });
