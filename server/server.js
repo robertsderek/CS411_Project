@@ -32,10 +32,9 @@ app.get('/calendar', async (req, res) => {
  */
 app.post('/calendar/new', (req, res) => {
   const currentDate = new Date()
-  const geolocation = require('./geolocation')
+
+  // Create new Month
   
-  const currentLocation = geolocation.getLocation()
-  console.log(currentLocation)
 
   const calendar_day = new Calendar_day( {
     date: currentDate,
