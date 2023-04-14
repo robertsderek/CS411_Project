@@ -1,20 +1,23 @@
 const express = require("express");
 const cors = require("cors");
-const mongoose = require('mongoose')
+const { MongoClient, ServerApiVersion } = require("mongodb")
+const uri = "mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority"
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Connect to Online DataBase on Atlas
-// Make sure to cover up password for security measures
-mongoose.connect("mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log("Connected to DB")).
-  catch(console.error);
+const utils = require("./utils");
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
 
 const Calendar_day = require('./models/calendar_model');
 
@@ -22,22 +25,28 @@ const Calendar_day = require('./models/calendar_model');
  * Finds all the available data within the calendar
  */
 app.get('/calendar', async (req, res) => {
-  const calendar = await Calendar_day.find();
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+  const currentYear = currentDate.getFullYear();
+  const num_days = await utils.daysInMonth(currentDate.getMonth(), currentDate.getFullYear());
+
+  // Check to see if the collection exist in the db and connect to it
+  const db = client.db();
+  const currentMonthCollectionName = currentMonth + "-" + currentYear;
+  const currentMonthCollection = await db.createCollection(currentMonthCollectionName);
+
 
   res.json(calendar);
+  client.close()
 });
 
 /**
  * Create a new calendar_day data
  */
-app.post('/calendar/new', (req, res) => {
-  const currentDate = new Date()
-
-  // Create new Month
-  
-
+app.post('/calendar/new', async (req, res) => {
   const calendar_day = new Calendar_day( {
-    date: currentDate,
+    date: current_date,
     content: req.body['content'],
     weather: req.body['weather']
   });
