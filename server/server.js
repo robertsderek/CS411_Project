@@ -51,4 +51,9 @@ app.delete('/calendar/delete/:id', async (req, res) => {
 	res.json({result});
 });
 
+app.post('/oauth', (req, res) => {
+  let stringoutput = req.body;
+  console.log(stringoutput);
+})
+
 app.listen(3001, () => console.log("Server started on port 3001"));
