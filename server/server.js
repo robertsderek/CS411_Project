@@ -25,6 +25,7 @@ const Calendar_day = require('./models/calendar_model');
  * Finds all the available data within the calendar
  */
 app.get('/calendar', async (req, res) => {
+  // Date Variables
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentDay = currentDate.getDate();
@@ -33,13 +34,19 @@ app.get('/calendar', async (req, res) => {
 
   // Check to see if the collection exist in the db and connect to it
   const db = client.db();
-  const currentMonthCollectionName = currentMonth + "-" + currentYear;
-  const currentMonthCollection = await db.createCollection(currentMonthCollectionName);
+  const currentDateCollectionName = currentMonth + "-" + currentYear;
+  const currentDateCollection = db.collection(currentDateCollectionName)
 
+  const collections = await db.listCollections().toArray();
+  const collectionExists = collections.some(col => col.name == currentDateCollectionName);
 
-  res.json(calendar);
-  client.close()
+  if (!collectionExists) {
+    await db.createCollection(currentDateCollectionName);
+  }
+
+  res.json(currentDateCollection.find().toArray());
 });
+
 
 /**
  * Create a new calendar_day data
