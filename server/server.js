@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const utils = require("./utils");
+const dbManager = require("./db")
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -33,18 +34,10 @@ app.get('/calendar', async (req, res) => {
   const num_days = await utils.daysInMonth(currentDate.getMonth(), currentDate.getFullYear());
 
   // Check to see if the collection exist in the db and connect to it
-  const db = client.db();
   const currentDateCollectionName = currentMonth + "-" + currentYear;
-  const currentDateCollection = db.collection(currentDateCollectionName)
-
-  const collections = await db.listCollections().toArray();
-  const collectionExists = collections.some(col => col.name == currentDateCollectionName);
-
-  if (!collectionExists) {
-    await db.createCollection(currentDateCollectionName);
-  }
-
-  res.json(currentDateCollection.find().toArray());
+  currentCollection = dbManager.grab_collection(currentDateCollectionName)
+  
+  res.json(currentCollection);
 });
 
 

@@ -1,6 +1,8 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority";
 
+const utils = require("./utils")
+
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -10,16 +12,45 @@ const client = new MongoClient(uri, {
   }
 });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+const db = client.db();
+
+/**
+ * Checks to see if the collection exist in the db and connect to it.
+ * If Collection does not exist then we create it
+ * Format of collectionName should be m-yyyy
+ */
+async function grab_collection(collectionName) {
+  // Check to see if the collection exist in the db and connect to it
+  const collections = await db.listCollections().toArray();
+  const collectionExists = collections.some(col => col.name == collectionName);
+  
+  if (!collectionExists) {
+    await db.createCollection(collectionName);
+    create_month(collectionName);
+  }
+
+  return db.collection(collectionName);
+}
+
+async function create_month(collectionName) {
+  const selectedCollection = db.collection(collectionName);
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  const num_days = await utils.daysInMonth(currentMonth, currentYear);
+
+  for (let i = 1; i <= num_days; i++) {
+    const payload = {
+      date: currentMonth + "-" + i + "-" + currentYear,
+      content: "",
+      weather: ""
+    };
+
+    selectedCollection.insertOne(payload)
   }
 }
-run().catch(console.dir);
+
+module.exports = {
+  grab_collection,
+};
