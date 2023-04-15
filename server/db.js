@@ -40,15 +40,17 @@ async function grab_collection(collectionName) {
 async function create_month(collectionName) {
   const selectedCollection = db.collection(collectionName);
   const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-  const formattedDate = currentDate.toISOString().substring(0, 10);
+  const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+  const year = currentDate.getFullYear();
 
-  const num_days = await utils.daysInMonth(currentMonth, currentYear);
+  const num_days = await utils.daysInMonth(month, year);
 
   for (let i = 1; i <= num_days; i++) {
+    // // Formats the date to yyy-mm-dd
+    const day = ('0' + i).slice(-2);
+    formattedDate = `${year}-${month}-${day}`;
     const payload = {
-      date: currentMonth + "-" + i + "-" + currentYear,
+      date: formattedDate,
       content: "",
       weather: await weather.getWeatherAtDate(formattedDate, "Boston")
     };
