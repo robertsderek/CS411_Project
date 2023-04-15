@@ -6,10 +6,9 @@ POST http://localhost:3001/calendar/new
 Content-Type: application/json
 
 {
-    "date": "Monday",
     "content": "content-check",
-    "weather": "Sunny"
+    "weather": "Rainy"
 }
 
 ###
-DELETE http://localhost:3001/calendar/delete/642b720324fe7f81490ba7c5
+DELETE http://localhost:3001/calendar/delete/64386171543adf931606c7b0

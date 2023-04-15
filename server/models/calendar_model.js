@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-// Utilize the weather API here to auto input weather
 
 const calendar_schema = Schema({
     date: {
