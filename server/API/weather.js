@@ -16,6 +16,26 @@ async function get_current_weather(q) {
     return weatherData
 }
 
+/**
+ * 
+ * @param {*} date Should be of format yyyy-mm-dd 
+ * @param {*} q 
+ * @returns 
+ */
+async function getWeatherAtDate(date, q) {
+    weatherCall = await fetch("https://api.weatherapi.com/v1/history.json?key=" + key + "&q=" + q + "&dt=" + date);
+    weatherData = await weatherCall.json();
+
+    parsedData = weatherData.forecast.forecastday[0].day;
+    
+    return parsedData
+}
+
+// getWeatherAtDate('2023-04-15', 'Boston').then(result => console.log(JSON.stringify(result.forecast.forecastday, null, 2)))
+// getWeatherAtDate('2023-04-15', 'Boston').then(result => console.log(JSON.stringify(result, null, 2)))
+// getWeatherAtDate('2023-04-15', 'Boston').then(result => console.log(result))
+
 module.exports = {
-    get_current_weather
+    get_current_weather,
+    getWeatherAtDate
 };

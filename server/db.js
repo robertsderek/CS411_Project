@@ -2,6 +2,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority";
 
 const utils = require("./utils")
+const weather = require("./API/weather")
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -32,11 +33,16 @@ async function grab_collection(collectionName) {
   return db.collection(collectionName);
 }
 
+/**
+ * Automatically create a month based on given API input from weather as well as an empty content for future update.
+ * @param {*} collectionName 
+ */
 async function create_month(collectionName) {
   const selectedCollection = db.collection(collectionName);
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
+  const formattedDate = currentDate.toISOString().substring(0, 10);
 
   const num_days = await utils.daysInMonth(currentMonth, currentYear);
 
@@ -44,7 +50,7 @@ async function create_month(collectionName) {
     const payload = {
       date: currentMonth + "-" + i + "-" + currentYear,
       content: "",
-      weather: ""
+      weather: await weather.getWeatherAtDate(formattedDate, "Boston")
     };
 
     selectedCollection.insertOne(payload)
