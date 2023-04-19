@@ -1,5 +1,7 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require('mongoose')
+const { OAuth2Client } = require('google-auth-library');
 const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = "mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority"
 
@@ -64,5 +66,29 @@ app.delete('/calendar/delete/:id', async (req, res) => {
 
 	res.json({result});
 });
+
+// verify and get user data
+async function verify(client_id, jwtToken) {
+  const client = new OAuth2Client(client_id);
+  // Call the verifyIdToken to
+  // varify and decode it
+  const ticket = await client.verifyIdToken({
+      idToken: jwtToken,
+      audience: client_id,
+  });
+  // Get the JSON with all the user info
+  const payload = await ticket.getPayload();
+  // This is a JSON object that contains
+  // all the user info
+  return payload;
+}
+
+app.post('/oauth', async (req, res) => {
+  let oauth = req.body;
+  let cred = oauth['credential']
+  let client_id = oauth['client_id']
+  let userData = await verify(client_id, cred)
+  res.json(userData)
+})
 
 app.listen(3001, () => console.log("Server started on port 3001"));
