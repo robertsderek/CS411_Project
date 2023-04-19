@@ -6,10 +6,12 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-OAUTH_API = "CHEDK DISCORD"
+const { OAUTH_API } = require('./oauth_credentials.js')
+let OAUTH_API_KEY =  OAUTH_API
+
 
 root.render(
-  <GoogleOAuthProvider clientId = "OAUTH_API">
+  <GoogleOAuthProvider clientId = {OAUTH_API_KEY}>
     <React.StrictMode>
       <App />
     </React.StrictMode>
