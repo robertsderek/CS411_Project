@@ -1,6 +1,7 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useState, useEffect } from 'react';
 import React from 'react';
+import Map from "./Map";
 
 function Welcome({email}) {
   return (
@@ -14,13 +15,14 @@ function Ask(){
   )
 }
 
+
 function App() {
   const [userEmail, setUserEmail] = useState("")
   const [login, setLogin] = useState(false)
 
   return (
     <div className="App">
-
+    
       {login 
         ? <Welcome email={userEmail}/> 
         : <GoogleLogin
@@ -38,6 +40,10 @@ function App() {
           console.log('Login Failed');
         }}/>
       }
+      
+
+      <h1>Welcome to Calendar</h1>
+      <Map />
       
     </div>
   )
