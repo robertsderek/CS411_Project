@@ -2,6 +2,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import Map from "./Map";
+import axios from "axios"
 
 function Welcome({email}) {
   return (
@@ -9,20 +10,13 @@ function Welcome({email}) {
   )
 }
 
-function Ask(){
-  return (
-    <h1>LOG IN NOW!</h1>
-  )
-}
-
-
 function App() {
   const [userEmail, setUserEmail] = useState("")
   const [login, setLogin] = useState(false)
 
   return (
     <div className="App">
-    
+
       {login 
         ? <Welcome email={userEmail}/> 
         : <GoogleLogin
@@ -35,6 +29,11 @@ function App() {
               .then(data => setUserEmail(data['email']))
               .then(_ => setLogin(true))
               .catch(error => console.log(error))
+
+            const user = {userEmail : userEmail}
+            axios.get('http://localhost:3001/calendar', { params: user })
+              .then(response => console.log(response.data))
+              .catch(error => console.error(error));
         }}
         onError={() => {
           console.log('Login Failed');
