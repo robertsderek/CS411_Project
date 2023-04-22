@@ -20,7 +20,7 @@ const db = client.db();
  * If Collection does not exist then we create it
  * Format of collectionName should be m-yyyy
  */
-async function grab_collection(collectionName) {
+async function check_collection(collectionName) {
   // Check to see if the collection exist in the db and connect to it
   const collections = await db.listCollections().toArray();
   const collectionExists = collections.some(col => col.name == collectionName);
@@ -29,7 +29,7 @@ async function grab_collection(collectionName) {
     await db.createCollection(collectionName);
     create_month(collectionName);
   }
-
+  
   return db.collection(collectionName);
 }
 
@@ -59,6 +59,13 @@ async function create_month(collectionName) {
   }
 }
 
+async function grab_collection_data(collectionName) {
+  const docs = await db.collection(collectionName).find({}).toArray();
+
+  return docs;
+}
+
 module.exports = {
-  grab_collection,
+  check_collection,
+  grab_collection_data
 };

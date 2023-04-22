@@ -35,11 +35,16 @@ app.get('/calendar', async (req, res) => {
   const currentYear = currentDate.getFullYear();
   const num_days = await utils.daysInMonth(currentDate.getMonth(), currentDate.getFullYear());
 
-  // Check to see if the collection exist in the db and connect to it
+  // Check to see if the collection exist and return it as a response
   const currentDateCollectionName = currentMonth + "-" + currentYear;
-  currentCollection = dbManager.grab_collection(currentDateCollectionName)
-  
-  res.json(currentCollection);
+  try {
+    await dbManager.check_collection(currentDateCollectionName);
+    const data = await dbManager.grab_collection_data(currentDateCollectionName);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({error: "Internal serveral error"});
+  }
 });
 
 
