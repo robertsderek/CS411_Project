@@ -31,9 +31,7 @@ app.get('/calendar', async (req, res) => {
   // Date Variables
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
-  const currentDay = currentDate.getDate();
   const currentYear = currentDate.getFullYear();
-  const num_days = await utils.daysInMonth(currentDate.getMonth(), currentDate.getFullYear());
 
   // Check to see if the collection exist and return it as a response
   const currentDateCollectionName = currentMonth + "-" + currentYear;
