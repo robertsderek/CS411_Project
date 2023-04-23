@@ -39,6 +39,11 @@ async function check_collection(email, month, year, location) {
     if (!existingCollection) {
       const monthDataObj = await create_month_data(month, year, location);
       await db.collection('users').updateOne({ userEmail }, { $push: { calendar: monthDataObj } });
+    } else {
+      // Otherwise we update it with new information
+      const monthDataObj = await create_month_data(month, year, location);
+
+      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { calendar: monthDataObj } });
     }
   }
 }
@@ -74,13 +79,11 @@ async function create_month_data(month, year, city) {
   return monthDataObj;
 }
 
-async function grab_collection_data(collectionName) {
-  const docs = await db.collection(collectionName).find({}).toArray();
+async function grab_collection_data(userEmail) {
+  const docs = await db.collection('users').find( {"userEmail": userEmail} ).toArray();
 
   return docs;
 }
-
-check_collection('james@gmail.com', 4, 2023, 'boston');
 
 module.exports = {
   check_collection,

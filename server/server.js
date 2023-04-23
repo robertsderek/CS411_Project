@@ -35,11 +35,9 @@ app.get('/calendar', async (req, res) => {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
 
-  // Check to see if the collection exist and return it as a response
-  const currentDateCollectionName = currentMonth + "-" + currentYear;
   try {
-    await dbManager.check_collection(userEmail, currentDateCollectionName);
-    const data = await dbManager.grab_collection_data(currentDateCollectionName);
+    await dbManager.check_collection(userEmail, currentMonth, currentYear, 'Boston');
+    const data = await dbManager.grab_collection_data(userEmail);
     res.json(data);
   } catch (err) {
     console.error(err); 
