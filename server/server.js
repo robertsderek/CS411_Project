@@ -91,4 +91,12 @@ app.post('/oauth', async (req, res) => {
   res.json(userData)
 })
 
+app.post('/api/location', (req, res) => {
+  // log the incoming request data to the console
+  console.log(req.body); 
+  res.send({ message: 'Data received successfully!' });
+});
+
 app.listen(3001, () => console.log("Server started on port 3001"));
+
+

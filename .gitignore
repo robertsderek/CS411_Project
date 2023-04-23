@@ -1,2 +1,4 @@
 node_modules
 server/API/credentials.js
+client/src/oauth_credentials.js
+.env

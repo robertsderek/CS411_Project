@@ -6,13 +6,14 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-const OAUTH_API = "630236275912-is23ok94ogc5fb7bl1st4p5q0hegrd51.apps.googleusercontent.com"
+const { OAUTH_API } = require('./oauth_credentials.js')
+let key =  OAUTH_API
 
 root.render(
-  <GoogleOAuthProvider clientId = {OAUTH_API}>
+  <GoogleOAuthProvider clientId = {key}>
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  </GoogleOAuthProvider>,
+  //</GoogleOAuthProvider>,
   document.getElementById('root')
 );
