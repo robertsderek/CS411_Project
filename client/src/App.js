@@ -2,16 +2,11 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import React from 'react';
 import Map from "./Map";
+import axios from "axios"
 
 function Welcome({ email }) {
   return (
     <h1>Welcome {email}</h1>
-  )
-}
-
-function Ask() {
-  return (
-    <h1>LOG IN NOW!</h1>
   )
 }
 
@@ -38,8 +33,9 @@ function App() {
 
   return (
     <div className="App">
-      {login
-        ? <Welcome email={userEmail} />
+    
+      {login 
+        ? <Welcome email={userEmail}/> 
         : <GoogleLogin
           onSuccess={async (credentialResponse) => {
             fetch('http://localhost:3001/oauth', {
@@ -51,10 +47,15 @@ function App() {
               .then(data => setUserEmail(data['email']))
               .then(_ => setLogin(true))
               .catch(error => console.log(error))
-          }}
-          onError={() => {
-            console.log('Login Failed');
-          }} />
+
+            const user = {userEmail : userEmail}
+            axios.get('http://localhost:3001/calendar', { params: user })
+              .then(response => console.log(response.data))
+              .catch(error => console.error(error));
+        }}
+        onError={() => {
+          console.log('Login Failed');
+        }}/>
       }
 
       <h1>Welcome to Calendar</h1>

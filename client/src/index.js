@@ -9,8 +9,6 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const { OAUTH_API } = require('./oauth_credentials.js')
 let key =  OAUTH_API
 
-
-
 root.render(
   <GoogleOAuthProvider clientId = {key}>
     <React.StrictMode>
