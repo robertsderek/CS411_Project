@@ -20,7 +20,7 @@ const placesClient = new GooglePlaces(apiKey);
 
 // callback function that is called when the Google Maps API is loaded and ready to be used
 function handleApiLoaded(map, maps) {
-  const places = new googlePlaces(apiKey);
+  const places = new GooglePlaces(apiKey);
 
   // Code for handling the API being loaded goes here
 }
@@ -40,6 +40,7 @@ async function getPlaceDetails() {
   console.log(place.formattedAddress);
 }
 
+/*
 async function getPlaces(query) {
   const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${apiKey}`;
   const config = { method: 'get', url: url, headers: {} };
@@ -59,3 +60,16 @@ getPlaces('Sushi in Los Angeles')
   .catch((error) => {
     console.log(error);
   });
+
+  */
+
+  export const getPlaces = async (query) => {
+    try {
+      const response = await fetch(`/api/places?query=${query}`);
+      const places = await response.json();
+      return places;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
