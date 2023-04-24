@@ -50,15 +50,15 @@ app.get('/calendar', async (req, res) => {
  * Create a new calendar_day data
  */
 app.post('/calendar/new', async (req, res) => {
-  const calendar_day = new Calendar_day( {
-    date: current_date,
-    content: req.body['content'],
-    weather: req.body['weather']
-  });
+  try {
+    const { date, event };
+    const payload = {
+      date,
+      event
+    };
 
-  calendar_day.save()
-
-  res.json(calendar_day)
+    const result = db.
+  }
 });
 
 /**

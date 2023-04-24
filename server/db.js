@@ -14,7 +14,6 @@ const client = new MongoClient(uri, {
 });
 
 const db = client.db();
-
 /**
  * Checks to see if the collection exist in the db and connect to it.
  * If Collection does not exist then we create it
@@ -33,20 +32,21 @@ async function check_collection(email, month, year, location) {
     await db.collection('users').insertOne(user)
   } else {
     // check if the collection exist
-    const existingCollection = await db.collection('users').find({"calendar.month": month, "calendar.year": year});
+    const existingCollection = await db.collection('users').find({"calendar.month": month, "calendar.year": year}).toArray();
 
     // if not we add to it
-    if (!existingCollection) {
+    if (existingCollection.length === 0) {
       const monthDataObj = await create_month_data(month, year, location);
       await db.collection('users').updateOne({ userEmail }, { $push: { calendar: monthDataObj } });
     } else {
       // Otherwise we update it with new information
       const monthDataObj = await create_month_data(month, year, location);
 
-      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { calendar: monthDataObj } });
+      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { "calendar.$": [monthDataObj] } });
     }
   }
 }
+
 
 /**
  * Automatically create a month based on given API input from weather as well as an empty content for future update.
@@ -84,6 +84,16 @@ async function grab_collection_data(userEmail) {
 
   return docs;
 }
+
+// async function insert_content(date, content) {
+// try {
+//   const collection = db.collection('users').find( {"userEmail": userEmail} );
+  
+//   const document = { }
+//   const result = await collection.insertOne()
+// }
+
+// }
 
 module.exports = {
   check_collection,
