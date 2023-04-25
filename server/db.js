@@ -14,7 +14,6 @@ const client = new MongoClient(uri, {
 });
 
 const db = client.db();
-
 /**
  * Checks to see if the collection exist in the db and connect to it.
  * If Collection does not exist then we create it
@@ -28,25 +27,26 @@ async function check_collection(email, month, year, location) {
 
   if (!existingUser) {
     const monthDataObj = await create_month_data(month, year, location);
-    const user = {userEmail, calendar: [monthDataObj]};
+    const user = {userEmail, month, year, location, monthDataObj};
 
     await db.collection('users').insertOne(user)
   } else {
     // check if the collection exist
-    const existingCollection = await db.collection('users').find({"calendar.month": month, "calendar.year": year});
+    const existingCollection = await db.collection('users').find({"userEmail": email, "month": month, "year": year}).toArray();
 
-    // if not we add to it
-    if (!existingCollection) {
+    // if not we replace the data
+    if (existingCollection.length === 0) {
       const monthDataObj = await create_month_data(month, year, location);
-      await db.collection('users').updateOne({ userEmail }, { $push: { calendar: monthDataObj } });
+      await db.collection('users').updateOne({ userEmail }, { $set: { "monthDataObj": monthDataObj } });
     } else {
       // Otherwise we update it with new information
       const monthDataObj = await create_month_data(month, year, location);
 
-      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { calendar: monthDataObj } });
+      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { "monthDataObj": monthDataObj } });
     }
   }
 }
+
 
 /**
  * Automatically create a month based on given API input from weather as well as an empty content for future update.
@@ -54,7 +54,7 @@ async function check_collection(email, month, year, location) {
  */
 async function create_month_data(month, year, city) {
   const num_days = await utils.daysInMonth(month, year);
-  const month_data = {};
+  const month_data = [];
 
   for (let i = 1; i <= num_days; i++) {
     const day = ('0' + i).slice(-2);
@@ -62,21 +62,15 @@ async function create_month_data(month, year, city) {
     const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
 
     const payload = {
+      formattedDate,
       content: "",
       weather
     };
 
-    month_data[formattedDate] = payload;
+    month_data.push(payload);
   }
 
-  const monthDataObj = {
-    month,
-    year,
-    city,
-    month_data
-  };
-
-  return monthDataObj;
+  return month_data;
 }
 
 async function grab_collection_data(userEmail) {
@@ -85,7 +79,31 @@ async function grab_collection_data(userEmail) {
   return docs;
 }
 
+async function set_content(email, day, content) {
+  const existingUser = await db.collection('users').findOne({ "userEmail": email });
+  if (!existingUser) {
+    throw new Error('User not found');
+  }
+
+  const { monthDataObj } = existingUser;
+  const index = day - 1; // adjust for 0-based array indexing
+
+  // make sure the index is within the range of the array
+  if (index < 0 || index >= monthDataObj.length) {
+    throw new Error('Invalid date');
+  }
+
+  // update the content field at the specified index
+  monthDataObj[index].content = content;
+
+  await db.collection('users').updateOne(
+    { "userEmail": email },
+    { $set: { "monthDataObj": monthDataObj } }
+  );
+}
+
 module.exports = {
   check_collection,
-  grab_collection_data
+  grab_collection_data,
+  set_content
 };

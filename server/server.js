@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const mongoose = require('mongoose')
 const { OAuth2Client } = require('google-auth-library');
 const { MongoClient, ServerApiVersion } = require("mongodb")
 const uri = "mongodb+srv://jameswong:jwong123@cluster0.pjc6myt.mongodb.net/?retryWrites=true&w=majority"
@@ -22,8 +21,6 @@ const client = new MongoClient(uri, {
   }
 });
 
-const Calendar_day = require('./models/calendar_model');
-
 /**
  * Finds all the available data within the calendar
  */
@@ -32,7 +29,7 @@ app.get('/calendar', async (req, res) => {
 
   // Date Variables
   const currentDate = new Date();
-  const currentMonth = currentDate.getMonth();
+  const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
   try {
@@ -50,24 +47,25 @@ app.get('/calendar', async (req, res) => {
  * Create a new calendar_day data
  */
 app.post('/calendar/new', async (req, res) => {
-  const calendar_day = new Calendar_day( {
-    date: current_date,
-    content: req.body['content'],
-    weather: req.body['weather']
-  });
+  try {
+    const email = req.query.email;
+    const day = req.query.day;
+    const content = req.query.content;
 
-  calendar_day.save()
-
-  res.json(calendar_day)
+    dbManager.set_content(email, day, content);
+    
+    const data = await dbManager.grab_collection_data(email);
+    res.json(data);
+  } catch(error) {
+    console.log(error);
+    res.status(500).send("Server Error");
+  }
 });
 
 /**
  * Delete existing calendar date by id
  */
 app.delete('/calendar/delete/:id', async (req, res) => {
-	const result = await Calendar_day.findByIdAndDelete(req.params.id);
-
-	res.json({result});
 });
 
 // verify and get user data
