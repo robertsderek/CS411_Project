@@ -7,8 +7,6 @@ import {OAUTH_API} from './oauth_credentials'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-console.log(OAUTH_API)
-
 root.render(
   <GoogleOAuthProvider clientId = {OAUTH_API}>
     <React.StrictMode>
