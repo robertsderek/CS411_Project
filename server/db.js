@@ -79,34 +79,33 @@ async function grab_collection_data(userEmail) {
   return docs;
 }
 
-// async function insert_content(email, month, year, date, content) {
-//   try {
-//     // find the user's collection
-//     const collection = await db.collection('users').findOne({ userEmail: email });
-    
-//     if (!collection) {
-//       throw new Error(`User with email ${email} not found`);
-//     }
+async function set_content(email, month, date, year, content) {
+  const existingUser = await db.collection('users').findOne({ "userEmail": email });
+  if (!existingUser) {
+    throw new Error('User not found');
+  }
 
-//     // find the document for the specified date
-//     const document = collection.calendar.find((item) => item.month === month && item.year === year)?.month_data[date];
-    
-//     if (!document) {
-//       throw new Error(`Document for ${date} not found`);
-//     }
+  const { monthDataObj } = existingUser;
+  const index = date - 1; // adjust for 0-based array indexing
 
-//     // update the content
-//     document.content = content;
+  // make sure the index is within the range of the array
+  if (index < 0 || index >= monthDataObj.length) {
+    throw new Error('Invalid date');
+  }
 
-//     // save the changes
-//     await db.collection('users').updateOne({ userEmail: email }, { $set: { calendar: collection.calendar } });
-    
-//   } catch (err) {
-//     console.log(err);
-//   }
-// }
+  // update the content field at the specified index
+  monthDataObj[index].content = content;
 
-check_collection('james@gmail.com', 5, 2023, 'boston');
+  await db.collection('users').updateOne(
+    { "userEmail": email },
+    { $set: { "monthDataObj": monthDataObj } }
+  );
+}
+
+
+
+
+set_content('james@gmail.com', 4, 25, 2023, 'testing');
 
 module.exports = {
   check_collection,
