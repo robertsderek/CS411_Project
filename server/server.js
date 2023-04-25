@@ -32,7 +32,6 @@ app.get('/calendar', async (req, res) => {
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  console.log(currentYear);
   try {
     await dbManager.check_collection(userEmail, currentMonth, currentYear, 'Boston');
     const data = await dbManager.grab_collection_data(userEmail);
@@ -51,13 +50,12 @@ app.post('/calendar/new', async (req, res) => {
   try {
     const email = req.query.email;
     const day = req.query.day;
-    const month = req.query.month;
-    const year = req.query.year;
     const content = req.query.content;
 
-    dbManager.set_content(email, month, day, year, content);
+    dbManager.set_content(email, day, content);
     
-    res.send(dbManager.grab_collection_data(email))
+    const data = await dbManager.grab_collection_data(email);
+    res.json(data);
   } catch(error) {
     console.log(error);
     res.status(500).send("Server Error");

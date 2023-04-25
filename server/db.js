@@ -79,14 +79,14 @@ async function grab_collection_data(userEmail) {
   return docs;
 }
 
-async function set_content(email, month, date, year, content) {
+async function set_content(email, day, content) {
   const existingUser = await db.collection('users').findOne({ "userEmail": email });
   if (!existingUser) {
     throw new Error('User not found');
   }
 
   const { monthDataObj } = existingUser;
-  const index = date - 1; // adjust for 0-based array indexing
+  const index = day - 1; // adjust for 0-based array indexing
 
   // make sure the index is within the range of the array
   if (index < 0 || index >= monthDataObj.length) {
@@ -101,11 +101,6 @@ async function set_content(email, month, date, year, content) {
     { $set: { "monthDataObj": monthDataObj } }
   );
 }
-
-
-
-
-set_content('james@gmail.com', 4, 25, 2023, 'testing');
 
 module.exports = {
   check_collection,
