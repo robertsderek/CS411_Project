@@ -51,13 +51,18 @@ app.get('/calendar', async (req, res) => {
  */
 app.post('/calendar/new', async (req, res) => {
   try {
-    const { date, event };
-    const payload = {
-      date,
-      event
-    };
+    const email = req.query.email;
+    const day = req.query.day;
+    const month = req.query.month;
+    const year = req.query.year;
+    const content = req.query.content;
 
-    const result = db.
+    dbManager.set_content(email, month, day, year, content);
+    
+    res.send(dbManager.grab_collection_data(email))
+  } catch(error) {
+    console.log(error);
+    res.status(500).send("Server Error");
   }
 });
 

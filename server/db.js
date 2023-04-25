@@ -109,5 +109,6 @@ set_content('james@gmail.com', 4, 25, 2023, 'testing');
 
 module.exports = {
   check_collection,
-  grab_collection_data
+  grab_collection_data,
+  set_content
 };
