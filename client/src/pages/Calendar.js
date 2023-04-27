@@ -16,6 +16,7 @@ export default function Calendar({userEmail}) {
 
     return (
         <div className='calendar'>
+            <CalendarDay date='monday' weather='sunny' content='test'/>
         </div>
       );
       
