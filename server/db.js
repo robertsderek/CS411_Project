@@ -89,7 +89,6 @@ async function updateWeather(email, month, year, city) {
     // check database collection
     const collection = await db.collection('forecast').findOne({userEmail: email})
     if (collection.weather == "No Data" && weather != "No Data") {
-      console.log("it works");
       await db.collection('forecast').updateOne(
         {userEmail: email, formattedDate: formattedDate},
         {$set: {weather: weather}}
@@ -97,13 +96,6 @@ async function updateWeather(email, month, year, city) {
     }
   }
 }
-
-async function grab_collection_data(userEmail) {
-  const docs = await db.collection('users').find( {"userEmail": userEmail} ).toArray();
-
-  return docs;
-}
-
 async function set_content(email, month, day, year, content) {
   const formattedDay = ('0' + (day)).slice(-2);
   const formattedDate = `${year}-${month}-${formattedDay}`
@@ -117,20 +109,14 @@ async function set_content(email, month, day, year, content) {
     { userEmail: email, formattedDate: formattedDate},
     { $set: {content: content }}
   );
-
-  // // make sure the index is within the range of the array
-  // if (index < 0 || index >= monthDataObj.length) {
-  //   throw new Error('Invalid date');
-  // }
-
-  // // update the content field at the specified index
-  // monthDataObj[index].content = content;
-
-  // await db.collection('users').updateOne(
-  //   { "userEmail": email },
-  //   { $set: { "monthDataObj": monthDataObj } }
-  // );
 }
+
+async function grab_collection_data(userEmail) {
+  const docs = await db.collection('forecast').find( {"userEmail": userEmail} ).toArray();
+
+  return docs;
+}
+
 
 
 // check_collection('james@gmail.com', 4, 2023, 'boston');
