@@ -39,7 +39,7 @@ async function getWeatherAtDate(date, q) {
 // Testing
 // getWeatherAtDate('2023-04-15', 'Boston').then(result => console.log(JSON.stringify(result.forecast.forecastday, null, 2)))
 // getWeatherAtDate('2023-04-15', 'Boston').then(result => console.log(JSON.stringify(result, null, 2)))
-// getWeatherAtDate('2023-04-30', 'Boston').then(result => console.log(result))
+// getWeatherAtDate('2023-04-10', 'Boston').then(result => console.log(result))
 
 module.exports = {
     get_current_weather,

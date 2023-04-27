@@ -20,29 +20,23 @@ const db = client.db();
  * Format of collectionName should be m-yyyy
  */
 async function check_collection(email, month, year, location) { 
-  const userEmail = email;
-
   // Check to see if the user exists in the db
-  const existingUser = await db.collection('users').findOne({ userEmail });
+  const existingUser = await db.collection('forecast').findOne({ userEmail: email });
+  const num_days = await utils.daysInMonth(month, year);
 
   if (!existingUser) {
-    const monthDataObj = await create_month_data(month, year, location);
-    const user = {userEmail, month, year, location, monthDataObj};
+    await create_month_collection(email, month, year, location);
 
-    await db.collection('users').insertOne(user)
   } else {
-    // check if the collection exist
-    const existingCollection = await db.collection('users').find({"userEmail": email, "month": month, "year": year}).toArray();
-
-    // if not we replace the data
-    if (existingCollection.length === 0) {
-      const monthDataObj = await create_month_data(month, year, location);
-      await db.collection('users').updateOne({ userEmail }, { $set: { "monthDataObj": monthDataObj } });
+    // Check if the collection for current month exist
+    const existingMonth = await db.collection('forecast').find({userEmail: email, month: month, year: year}).toArray();
+    
+    if (existingMonth.length === 0) {
+      console.log('Month does not exist');
+      await create_month_collection(email, month, year, location);
     } else {
-      // Otherwise we update it with new information
-      const monthDataObj = await create_month_data(month, year, location);
-
-      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { "monthDataObj": monthDataObj } });
+      // Update forecast if "No Data"
+      updateWeather(email, month, year, location);
     }
   }
 }
@@ -52,25 +46,56 @@ async function check_collection(email, month, year, location) {
  * Automatically create a month based on given API input from weather as well as an empty content for future update.
  * @param {*} collectionName 
  */
-async function create_month_data(month, year, city) {
+async function create_month_collection(userEmail, month, year, city) {
   const num_days = await utils.daysInMonth(month, year);
-  const month_data = [];
 
-  for (let i = 1; i <= num_days; i++) {
-    const day = ('0' + i).slice(-2);
+  for (var i = 0; i < num_days; i++) {
+    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
     const formattedDate = `${year}-${month}-${day}`;
     const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
 
-    const payload = {
+    const forecast = {
+      userEmail,
+      month,
+      year,
+      formattedDate,
+      city,
+      weather
+    }
+    db.collection("forecast").insertOne(forecast);
+
+
+    const content = {
+      userEmail,
+      month,
+      year,
+      city,
       formattedDate,
       content: "",
-      weather
-    };
+    }
 
-    month_data.push(payload);
+    db.collection("content").insertOne(content);
   }
+}
 
-  return month_data;
+async function updateWeather(email, month, year, city) {
+  const num_days = await utils.daysInMonth(month, year);
+
+  for (var i = 0; i < num_days; i++) {
+    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
+    const formattedDate = `${year}-${month}-${day}`;
+    const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
+
+    // check database collection
+    const collection = await db.collection('forecast').findOne({userEmail: email})
+    if (collection.weather == "No Data" && weather != "No Data") {
+      console.log("it works");
+      await db.collection('forecast').updateOne(
+        {userEmail: email, formattedDate: formattedDate},
+        {$set: {weather: weather}}
+      );
+    }
+  }
 }
 
 async function grab_collection_data(userEmail) {
@@ -101,6 +126,10 @@ async function set_content(email, day, content) {
     { $set: { "monthDataObj": monthDataObj } }
   );
 }
+
+
+// check_collection('james@gmail.com', 4, 2023, 'boston');
+updateWeather('james@gmail.com', 4, 2023, 'boston');
 
 module.exports = {
   check_collection,
