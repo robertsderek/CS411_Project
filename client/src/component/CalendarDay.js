@@ -1,21 +1,27 @@
 import React from 'react';
 
-export default function CalendarDay({ date, weather, content}) {
+export default function CalendarDay({ day, weather, weatherCondition, weatherIcon, content}) {
     return (
         <div className='calendarDay'>
             <div className='calendarDay-date'>
-                {date}
+                {day}
             </div>
 
-            <div className='calendarDay-weater'>
+            <div className='calendarDay-weather'>
                 {weather}
+            </div>
+
+            <div className='calendarDay-weather-condition'>
+                {weatherCondition}
+            </div>
+
+            <div className='weatherIcon'>
+                <img src={weatherIcon} alt=''/>
             </div>
 
             <div className='calendarDay-content'>
                 {content}
             </div>
-
-            <a ></a>
         </div>
     )
 };
