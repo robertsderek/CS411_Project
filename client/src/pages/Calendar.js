@@ -9,14 +9,15 @@ export default function Calendar({userEmail}) {
         const fetchData = async() =>{
             const result = await axios.get('http://localhost:3001/calendar?userEmail=james@gmail.com');
             setData(result.data);
-            console.log(result.data.monthDataObj);
         };
         fetchData();
     }, []);
 
     return (
         <div className='calendar'>
-            <CalendarDay date='monday' weather='sunny' content='test'/>
+            {data.map(item =>(
+                <CalendarDay date={item.formattedDate} weather={item.weather.avgtemp_f} content={item.content} />
+            ))}
         </div>
       );
       
