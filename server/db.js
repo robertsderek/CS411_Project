@@ -64,14 +64,16 @@ async function create_month_collection(userEmail, month, year, city) {
     }
     db.collection("forecast").insertOne(forecast);
 
-
     const content = {
       userEmail,
       month,
       year,
       city,
       formattedDate,
-      content: "",
+      content: {
+        name: "",
+        address: ""
+      },
     }
 
     db.collection("content").insertOne(content);
@@ -111,7 +113,7 @@ async function updateWeather(email, month, year, city) {
  * @param {*} year 
  * @param {*} content 
  */
-async function set_content(email, month, day, year, content) {
+async function set_content(email, month, day, year, name, address) {
   const formattedDay = ('0' + (day)).slice(-2);
   const formattedDate = `${year}-${month}-${formattedDay}`
 
@@ -122,8 +124,8 @@ async function set_content(email, month, day, year, content) {
 
   await db.collection('content').updateOne(
     { userEmail: email, formattedDate: formattedDate},
-    { $set: {content: content }}
-  );
+    { $set: { 'content.name': name, 'content.address': address } }
+  );  
 }
 
 // Grab collection with the same month and year and combine their data
@@ -186,7 +188,7 @@ async function grab_collection_data(userEmail, month, year) {
 // console.log(grab_collection_data('james@gmail.com', 4, 2023));
 // check_collection('james@gmail.com', 4, 2023, 'boston');
 // updateWeather('james@gmail.com', 4, 2023, 'boston');
-// set_content('james@gmail.com', 4, 25, 2023, 'hello');
+set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
 
 
 module.exports = {
