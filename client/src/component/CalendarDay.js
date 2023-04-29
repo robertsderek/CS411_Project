@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CalendarDay({ day, weather, weatherCondition, weatherIcon, content}) {
+export default function CalendarDay({ day, weather, weatherCondition, weatherIcon, placeName, placeAddress}) {
     return (
         <div className='calendarDay'>
             <div className='calendarDay-date'>
@@ -20,7 +20,8 @@ export default function CalendarDay({ day, weather, weatherCondition, weatherIco
             </div>
 
             <div className='calendarDay-content'>
-                {content}
+                <p>{placeName}</p>
+                <p>{placeAddress}</p>
             </div>
         </div>
     )

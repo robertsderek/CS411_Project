@@ -33,7 +33,8 @@ export default function Calendar({userEmail}) {
                 weather={item.weather?.avgtemp_f !== undefined ? item.weather?.avgtemp_f + "°F" : undefined}
                 weatherCondition={item.weather?.condition?.text}
                 weatherIcon={item.weather?.condition?.icon !== undefined ? 'https:' + item.weather?.condition?.icon : undefined}
-                content={item.content}
+                placeName={item.content?.name}
+                placeAddress={item.content?.address}
               />
             ))}
           </div>
