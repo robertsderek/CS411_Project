@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .calendarContainer {
+    text-align: center;
+    height: 100vh;
+  }
+  
+  .calendarHeader {
+    height: 5vh;
+    font-size: 3vh;
+  }
+  
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #ccc;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .calendarDay {
+    height: 19vh;
+    background-color: antiquewhite;
+    padding: 0 0.5em;
+    box-sizing: border-box;
+    outline: 1px solid black;
+  }
+  

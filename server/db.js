@@ -20,29 +20,23 @@ const db = client.db();
  * Format of collectionName should be m-yyyy
  */
 async function check_collection(email, month, year, location) { 
-  const userEmail = email;
-
   // Check to see if the user exists in the db
-  const existingUser = await db.collection('users').findOne({ userEmail });
+  const existingUser = await db.collection('forecast').findOne({ userEmail: email });
+  const num_days = await utils.daysInMonth(month, year);
 
   if (!existingUser) {
-    const monthDataObj = await create_month_data(month, year, location);
-    const user = {userEmail, month, year, location, monthDataObj};
+    await create_month_collection(email, month, year, location);
 
-    await db.collection('users').insertOne(user)
   } else {
-    // check if the collection exist
-    const existingCollection = await db.collection('users').find({"userEmail": email, "month": month, "year": year}).toArray();
-
-    // if not we replace the data
-    if (existingCollection.length === 0) {
-      const monthDataObj = await create_month_data(month, year, location);
-      await db.collection('users').updateOne({ userEmail }, { $set: { "monthDataObj": monthDataObj } });
+    // Check if the collection for current month exist
+    const existingMonth = await db.collection('forecast').find({userEmail: email, month: month, year: year}).toArray();
+    
+    if (existingMonth.length === 0) {
+      console.log('Month does not exist');
+      await create_month_collection(email, month, year, location);
     } else {
-      // Otherwise we update it with new information
-      const monthDataObj = await create_month_data(month, year, location);
-
-      await db.collection('users').updateOne({ "userEmail": userEmail, "calendar.month": month, "calendar.year": year }, { $set: { "monthDataObj": monthDataObj } });
+      // Update forecast if "No Data"
+      updateWeather(email, month, year, location);
     }
   }
 }
@@ -52,58 +46,153 @@ async function check_collection(email, month, year, location) {
  * Automatically create a month based on given API input from weather as well as an empty content for future update.
  * @param {*} collectionName 
  */
-async function create_month_data(month, year, city) {
+async function create_month_collection(userEmail, month, year, city) {
   const num_days = await utils.daysInMonth(month, year);
-  const month_data = [];
 
-  for (let i = 1; i <= num_days; i++) {
-    const day = ('0' + i).slice(-2);
+  for (var i = 0; i < num_days; i++) {
+    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
     const formattedDate = `${year}-${month}-${day}`;
     const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
 
-    const payload = {
+    const forecast = {
+      userEmail,
+      month,
+      year,
       formattedDate,
-      content: "",
+      city,
       weather
-    };
+    }
+    db.collection("forecast").insertOne(forecast);
 
-    month_data.push(payload);
+    const content = {
+      userEmail,
+      month,
+      year,
+      city,
+      formattedDate,
+      content: {
+        name: "",
+        address: ""
+      },
+    }
+
+    db.collection("content").insertOne(content);
   }
+}
+/**
+ * Updates the weather within the database
+ * @param {*} email 
+ * @param {*} month 
+ * @param {*} year 
+ * @param {*} city 
+ */
+async function updateWeather(email, month, year, city) {
+  const num_days = await utils.daysInMonth(month, year);
 
-  return month_data;
+  for (var i = 0; i < num_days; i++) {
+    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
+    const formattedDate = `${year}-${month}-${day}`;
+    const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
+
+    // check database collection
+    const collection = await db.collection('forecast').findOne({userEmail: email})
+    if (collection.weather == "No Data" && weather != "No Data") {
+      await db.collection('forecast').updateOne(
+        {userEmail: email, formattedDate: formattedDate},
+        {$set: {weather: weather}}
+      );
+    }
+  }
 }
 
-async function grab_collection_data(userEmail) {
-  const docs = await db.collection('users').find( {"userEmail": userEmail} ).toArray();
+/**
+ * Sets the content of a certain date
+ * @param {*} email 
+ * @param {*} month 
+ * @param {*} day 
+ * @param {*} year 
+ * @param {*} content 
+ */
+async function set_content(email, month, day, year, name, address) {
+  const formattedDay = ('0' + (day)).slice(-2);
+  const formattedDate = `${year}-${month}-${formattedDay}`
 
-  return docs;
-}
-
-async function set_content(email, day, content) {
-  const existingUser = await db.collection('users').findOne({ "userEmail": email });
+  const existingUser = await db.collection('content').findOne({ userEmail: email, formattedDate: formattedDate});
   if (!existingUser) {
     throw new Error('User not found');
   }
 
-  const { monthDataObj } = existingUser;
-  const index = day - 1; // adjust for 0-based array indexing
-
-  // make sure the index is within the range of the array
-  if (index < 0 || index >= monthDataObj.length) {
-    throw new Error('Invalid date');
-  }
-
-  // update the content field at the specified index
-  monthDataObj[index].content = content;
-
-  await db.collection('users').updateOne(
-    { "userEmail": email },
-    { $set: { "monthDataObj": monthDataObj } }
-  );
+  await db.collection('content').updateOne(
+    { userEmail: email, formattedDate: formattedDate},
+    { $set: { 'content.name': name, 'content.address': address } }
+  );  
 }
+
+// Grab collection with the same month and year and combine their data
+async function grab_collection_data(userEmail, month, year) {
+  const docs = await db.collection('forecast').aggregate([
+    {
+      $lookup: {
+        from: 'content',
+        let: {
+          formattedDate: '$formattedDate',
+          userEmail: '$userEmail',
+          month: '$month',
+          year: '$year'
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$formattedDate', '$$formattedDate'] },
+                  { $eq: ['$userEmail', '$$userEmail'] },
+                  { $eq: ['$month', '$$month'] },
+                  { $eq: ['$year', '$$year'] }
+                ]
+              }
+            }
+          },
+          {
+            $project: {
+              content: 1
+            }
+          }
+        ],
+        as: 'content'
+      }
+    },
+    {
+      $unwind: '$content'
+    },
+    {
+      $match: {
+        userEmail: userEmail,
+        month: month,
+        year: year
+      }
+    },
+    {
+      $addFields: {
+        content: '$content.content'
+      }
+    }
+  ]).toArray();
+
+  return docs;
+}
+
+
+
+
+// console.log(grab_collection_data('james@gmail.com', 4, 2023));
+// check_collection('james@gmail.com', 4, 2023, 'boston');
+// updateWeather('james@gmail.com', 4, 2023, 'boston');
+set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
+
 
 module.exports = {
   check_collection,
+  set_content,
   grab_collection_data,
-  set_content
 };

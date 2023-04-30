@@ -9,7 +9,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const utils = require("./utils");
 const dbManager = require("./db")
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -25,7 +24,8 @@ const client = new MongoClient(uri, {
  * Finds all the available data within the calendar
  */
 app.get('/calendar', async (req, res) => {
-  const userEmail = req.query.userEmail;
+  //const userEmail = req.query.userEmail;
+  const userEmail = req.body;
 
   // Date Variables
   const currentDate = new Date();
@@ -34,7 +34,7 @@ app.get('/calendar', async (req, res) => {
 
   try {
     await dbManager.check_collection(userEmail, currentMonth, currentYear, 'Boston');
-    const data = await dbManager.grab_collection_data(userEmail);
+    const data = await dbManager.grab_collection_data(userEmail, currentMonth, currentYear);
     res.json(data);
   } catch (err) {
     console.error(err); 
@@ -44,15 +44,17 @@ app.get('/calendar', async (req, res) => {
 
 
 /**
- * Create a new calendar_day data
+ * Create a new content for calendar day
  */
 app.post('/calendar/new', async (req, res) => {
   try {
     const email = req.query.email;
+    const month = req.query.month
     const day = req.query.day;
+    const year = req.query.year;
     const content = req.query.content;
 
-    dbManager.set_content(email, day, content);
+    dbManager.set_content(email, month, day, year, content);
     
     const data = await dbManager.grab_collection_data(email);
     res.json(data);
@@ -99,5 +101,3 @@ app.post('/api/location', (req, res) => {
 });
 
 app.listen(3001, () => console.log("Server started on port 3001"));
-
-

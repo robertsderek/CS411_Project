@@ -2,16 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import {OAUTH_API} from './oauth_credentials'
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Calendar from './pages/Calendar';
+import Login from './pages/Login'
+import AddContent from './pages/AddContent'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <GoogleOAuthProvider clientId = {OAUTH_API}>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </GoogleOAuthProvider>,
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<App/>}/>
+        <Route path='/Login' element={<Login/>}/>
+        <Route path="/Calendar" element={<Calendar/>} />
+        <Route path="/AddContent" element={<AddContent/>} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>,
   document.getElementById('root')
 );
