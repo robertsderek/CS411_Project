@@ -64,20 +64,28 @@ async function create_month_collection(userEmail, month, year, city) {
     }
     db.collection("forecast").insertOne(forecast);
 
-
     const content = {
       userEmail,
       month,
       year,
       city,
       formattedDate,
-      content: "",
+      content: {
+        name: "",
+        address: ""
+      },
     }
 
     db.collection("content").insertOne(content);
   }
 }
-
+/**
+ * Updates the weather within the database
+ * @param {*} email 
+ * @param {*} month 
+ * @param {*} year 
+ * @param {*} city 
+ */
 async function updateWeather(email, month, year, city) {
   const num_days = await utils.daysInMonth(month, year);
 
@@ -96,7 +104,16 @@ async function updateWeather(email, month, year, city) {
     }
   }
 }
-async function set_content(email, month, day, year, content) {
+
+/**
+ * Sets the content of a certain date
+ * @param {*} email 
+ * @param {*} month 
+ * @param {*} day 
+ * @param {*} year 
+ * @param {*} content 
+ */
+async function set_content(email, month, day, year, name, address) {
   const formattedDay = ('0' + (day)).slice(-2);
   const formattedDate = `${year}-${month}-${formattedDay}`
 
@@ -107,24 +124,75 @@ async function set_content(email, month, day, year, content) {
 
   await db.collection('content').updateOne(
     { userEmail: email, formattedDate: formattedDate},
-    { $set: {content: content }}
-  );
+    { $set: { 'content.name': name, 'content.address': address } }
+  );  
 }
 
-async function grab_collection_data(userEmail) {
-  const docs = await db.collection('forecast').find( {"userEmail": userEmail} ).toArray();
+// Grab collection with the same month and year and combine their data
+async function grab_collection_data(userEmail, month, year) {
+  const docs = await db.collection('forecast').aggregate([
+    {
+      $lookup: {
+        from: 'content',
+        let: {
+          formattedDate: '$formattedDate',
+          userEmail: '$userEmail',
+          month: '$month',
+          year: '$year'
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$formattedDate', '$$formattedDate'] },
+                  { $eq: ['$userEmail', '$$userEmail'] },
+                  { $eq: ['$month', '$$month'] },
+                  { $eq: ['$year', '$$year'] }
+                ]
+              }
+            }
+          },
+          {
+            $project: {
+              content: 1
+            }
+          }
+        ],
+        as: 'content'
+      }
+    },
+    {
+      $unwind: '$content'
+    },
+    {
+      $match: {
+        userEmail: userEmail,
+        month: month,
+        year: year
+      }
+    },
+    {
+      $addFields: {
+        content: '$content.content'
+      }
+    }
+  ]).toArray();
 
   return docs;
 }
 
 
 
+
+// console.log(grab_collection_data('james@gmail.com', 4, 2023));
 // check_collection('james@gmail.com', 4, 2023, 'boston');
 // updateWeather('james@gmail.com', 4, 2023, 'boston');
-// set_content('james@gmail.com', 4, 25, 2023, 'hello');
+set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
+
 
 module.exports = {
   check_collection,
+  set_content,
   grab_collection_data,
-  set_content
 };
