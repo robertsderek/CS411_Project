@@ -18,6 +18,7 @@ export default function Login(){
             text="Login with google"
             onSuccess={async (credentialResponse) => {
               //create a session and redirect to Calendar page
+              //call backend call to /oauth to verify credentials and get user's email
               sessionStorage.setItem("credentials", credentialResponse);
               navigate('/Calendar');
           }}
