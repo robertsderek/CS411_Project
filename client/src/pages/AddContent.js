@@ -1,12 +1,16 @@
 import {  React, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { get_current_weather } from 'weather.js'; // import get_current_weather function from weather.js
+// import { get_current_weather } from 'weather.js'; // import get_current_weather function from weather.js
 
 export default function AddContent() {
     let map, infoWindow, placesService;
     const [places, setPlaces] = useState([]);
     const [currentWeather, setCurrentWeather] = useState(null);
     const [date, setDate] = useState(new Date());
+
+    const {state} = useLocation();
+    const {calendarDayItem} = state;
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -51,10 +55,11 @@ export default function AddContent() {
              const q = `${position.coords.latitude},${position.coords.longitude}`;
 
              // fetch current weather using the q parameter
-             get_current_weather(q).then((data) => {
-                console.log(data);
-                 setCurrentWeather(data);
-             });
+             setCurrentWeather(calendarDayItem.weather)
+            //  get_current_weather(q).then((data) => {
+            //     console.log(data);
+            //      setCurrentWeather(data);
+            //  });
   
               // Call getPlaces with the search term
               getPlaces("activities", pos);
@@ -133,19 +138,16 @@ export default function AddContent() {
               // Handle button click event
                 const addToCalendarButton = document.getElementById('addToCalendarButton');
                 addToCalendarButton.addEventListener('click', () => {
-                    const email = "temp@example.com";
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                    const email = calendarDayItem.userEmail;
+                    const month = (date.getMonth() + 1).toString();
                     const day = date.getDate().toString().padStart(2, '0');
                     const year = date.getFullYear().toString();
-                    const content = `${place.name}, ${place.formatted_address}`;
+                    const contentName = place.name;
+                    const contentAddress = place.formatted_address;
+                    // const content = `${place.name}, ${place.formatted_address}`;
+                    const content = {name: place.name, address: place.formatted_address}
             
-                    axios.post("http://localhost:3001/calendar/new", {
-                      email,
-                      month,
-                      day,
-                      year,
-                      content,
-                    })
+                    axios.post(`http://localhost:3001/calendar/new?email=${email}&month=${month}&day=${day}&year=${year}&contentName=${contentName}&contentAddress=${contentAddress}`)
                     .then(response => {
                       console.log(response.data.message);
                     })
@@ -166,9 +168,9 @@ export default function AddContent() {
         <h1>{"Today is: " + date.toLocaleDateString()}</h1>
         {currentWeather && (
         <div>
-          <p> <b>Current weather: </b> {currentWeather.current.temp_f} F</p>
-          <p> <b>Feels like:</b> {currentWeather.current.feelslike_f} F</p>
-          <p> <b>Wind:</b> {currentWeather.current.wind_mph + " miles per hour in direction " + currentWeather.current.wind_dir}</p>
+          <p> <b>Current weather: </b> {currentWeather.current?.temp_f} F</p>
+          <p> <b>Feels like:</b> {currentWeather.current?.feelslike_f} F</p>
+          <p> <b>Wind:</b> {currentWeather.current?.wind_mph + " miles per hour in direction " + currentWeather.current?.wind_dir}</p>
         </div>
       )}
         <div id="map" style={{ height: "530px", width: "100%" }}></div>

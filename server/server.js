@@ -46,15 +46,16 @@ app.get('/calendar', async (req, res) => {
 /**
  * Create a new content for calendar day
  */
-app.post('', async (req, res) => {
+app.post('/calendar/new', async (req, res) => {
   try {
     const email = req.query.email;
     const month = req.query.month
     const day = req.query.day;
     const year = req.query.year;
-    const content = req.query.content;
+    const contentName = req.query.contentName;
+    const contentAddress = req.query.contentAddress;
 
-    dbManager.set_content(email, month, day, year, content);
+    dbManager.set_content(email, month, day, year, contentName, contentAddress);
     
     const data = await dbManager.grab_collection_data(email);
     res.json(data);
