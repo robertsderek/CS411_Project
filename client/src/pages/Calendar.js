@@ -13,6 +13,7 @@ export default function Calendar({userEmail}) {
             const result = await axios.get(`http://localhost:3001/calendar?userEmail=${userEmail}`);
             setData(result.data);
             setIsLoading(false);
+            console.log(result.data)
         };
         fetchData();
 
