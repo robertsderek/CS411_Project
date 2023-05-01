@@ -1,3 +1,6 @@
+
+ 
+
 import React from 'react';
 
 export default function CalendarDay({ day, weather, weatherCondition, weatherIcon, placeName, placeAddress}) {
