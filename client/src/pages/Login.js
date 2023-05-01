@@ -17,23 +17,9 @@ export default function Login(){
           <GoogleLogin
             text="Login with google"
             onSuccess={async (credentialResponse) => {
-              fetch('http://localhost:3001/oauth', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(credentialResponse)
-              })
-                .then(response => response.json())
-                .then(data => setUserEmail(data['email']))
-                .then(_ => setLogin(true))
-                .catch(error => console.log(error))
-
-              const user = {userEmail : userEmail}
-              axios.get('http://localhost:3001/calendar', { params: user })
-                .then(response => console.log(response.data))
-                .catch(error => console.error(error));
-
               //create a session and redirect to Calendar page
-              sessionStorage.setItem("login", true);
+              //call backend call to /oauth to verify credentials and get user's email
+              sessionStorage.setItem("credentials", credentialResponse);
               navigate('/Calendar');
           }}
           onError={() => {
