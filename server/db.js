@@ -196,7 +196,7 @@ async function grab_collection_data(userEmail, month, year) {
 
 
 // console.log(grab_collection_data('james@gmail.com', 4, 2023));
-// check_collection('james@gmail.com', 4, 2023, 'boston');
+// check_collection('james@gmail.com', 5, 2023, 'boston');
 // updateWeather('james@gmail.com', 4, 2023, 'boston');
 // set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
 

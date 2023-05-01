@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
  */
 app.get('/calendar', async (req, res) => {
   //const userEmail = req.query.userEmail;
-  const userEmail = req.body;
+  const userEmail = req.query.userEmail;
 
   // Date Variables
   const currentDate = new Date();
@@ -46,7 +46,7 @@ app.get('/calendar', async (req, res) => {
 /**
  * Create a new content for calendar day
  */
-app.post('/calendar/new', async (req, res) => {
+app.post('', async (req, res) => {
   try {
     const email = req.query.email;
     const month = req.query.month
