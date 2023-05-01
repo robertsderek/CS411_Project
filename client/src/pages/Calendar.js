@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import CalendarDay from '../component/CalendarDay';
 import "./calendar.css";
 
-export default function Calendar({userEmail}) {
+export default function Calendar() {
     const [data, setData] = useState([]);
     const [currentMonthYear, setCurrentMonthYear] = useState('')
     const [isLoading, setIsLoading] = useState(true);
 
+    const location = useLocation();
+    const userEmail = location.state.userEmail;
+
     useEffect(() =>{
         const fetchData = async() =>{
-            const result = await axios.get(`http://localhost:3001/calendar?userEmail=${userEmail}`);
-            setData(result.data);
+            // const result = await axios.get("http://localhost:3001/calendar?userEmail=jamesw03@bu.edu");
+            // setData(result.data);
+            // setIsLoading(false);
+            // console.log(result.data)
+          axios.get(`http://localhost:3001/calendar?userEmail=${userEmail}`)
+          .then((response) => {
+            setData(response.data);
             setIsLoading(false);
+            console.log(response.data);
+          })
+
         };
         fetchData();
 
@@ -34,12 +46,7 @@ export default function Calendar({userEmail}) {
               {data.map((item, index) => (
                 <CalendarDay
                   day={index + 1}
-                  date={item.formattedDate}
-                  weather={item.weather?.avgtemp_f !== undefined ? item.weather?.avgtemp_f + "°F" : undefined}
-                  weatherCondition={item.weather?.condition?.text}
-                  weatherIcon={item.weather?.condition?.icon !== undefined ? 'https:' + item.weather?.condition?.icon : undefined}
-                  placeName={item.content?.name}
-                  placeAddress={item.content?.address}
+                  calendarDayItem={item}
                 />
               ))}
             </div>

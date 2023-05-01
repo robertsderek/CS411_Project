@@ -52,33 +52,45 @@ async function create_month_collection(userEmail, month, year, city) {
   for (var i = 0; i < num_days; i++) {
     const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
     const formattedDate = `${year}-${month}-${day}`;
-    const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
 
-    const forecast = {
-      userEmail,
-      month,
-      year,
-      formattedDate,
-      city,
-      weather
-    }
-    db.collection("forecast").insertOne(forecast);
+    // check if a forecast already exists for this date
+    const forecastExists = await db.collection("forecast").findOne({formattedDate});
 
-    const content = {
-      userEmail,
-      month,
-      year,
-      city,
-      formattedDate,
-      content: {
-        name: "",
-        address: ""
-      },
+    if (!forecastExists) {
+      const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
+
+      const forecast = {
+        userEmail,
+        month,
+        year,
+        formattedDate,
+        city,
+        weather
+      }
+      await db.collection("forecast").insertOne(forecast);
     }
 
-    db.collection("content").insertOne(content);
+    // check if a content already exists for this date
+    const contentExists = await db.collection("content").findOne({formattedDate});
+
+    if (!contentExists) {
+      const content = {
+        userEmail,
+        month,
+        year,
+        city,
+        formattedDate,
+        content: {
+          name: "",
+          address: ""
+        },
+      }
+
+      await db.collection("content").insertOne(content);
+    }
   }
 }
+
 /**
  * Updates the weather within the database
  * @param {*} email 
@@ -183,12 +195,10 @@ async function grab_collection_data(userEmail, month, year) {
 }
 
 
-
-
 // console.log(grab_collection_data('james@gmail.com', 4, 2023));
-// check_collection('james@gmail.com', 4, 2023, 'boston');
+// check_collection('james@gmail.com', 5, 2023, 'boston');
 // updateWeather('james@gmail.com', 4, 2023, 'boston');
-set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
+// set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
 
 
 module.exports = {

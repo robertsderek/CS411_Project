@@ -5,7 +5,7 @@ import App from './App';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Calendar from './pages/Calendar';
 import Login from './pages/Login'
-import AddContent from './pages/AddContent'
+import AddContent from './pages/AddContent';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
