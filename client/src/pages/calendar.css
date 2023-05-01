@@ -24,6 +24,7 @@ body {
   
   .calendarDay {
     height: 19vh;
+    overflow-y: auto;
     background-color: antiquewhite;
     padding: 0 0.5em;
     box-sizing: border-box;
