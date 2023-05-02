@@ -1,7 +1,6 @@
 import {  React, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-// import { get_current_weather } from 'weather.js'; // import get_current_weather function from weather.js
 
 export default function AddContent() {
     let map, infoWindow, placesService;
@@ -56,11 +55,6 @@ export default function AddContent() {
 
              // fetch current weather using the q parameter
              setCurrentWeather(calendarDayItem.weather)
-            //  get_current_weather(q).then((data) => {
-            //     console.log(data);
-            //      setCurrentWeather(data);
-            //  });
-  
               // Call getPlaces with the search term
               getPlaces("activities", pos);
             },
@@ -144,8 +138,6 @@ export default function AddContent() {
                     const year = date.getFullYear().toString();
                     const contentName = place.name;
                     const contentAddress = place.formatted_address;
-                    // const content = `${place.name}, ${place.formatted_address}`;
-                    const content = {name: place.name, address: place.formatted_address}
             
                     axios.post(`http://localhost:3001/calendar/new?email=${email}&month=${month}&day=${day}&year=${year}&contentName=${contentName}&contentAddress=${contentAddress}`)
                     .then(response => {

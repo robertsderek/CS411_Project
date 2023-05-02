@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 export default function CalendarDay({ day, calendarDayItem }) {
     const navigate = useNavigate();
 
-    console.log(calendarDayItem.content.name);
     const handleClick = () => {
         navigate('/AddContent', { state: {calendarDayItem} })
     }
