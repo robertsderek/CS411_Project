@@ -7,23 +7,29 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login(){
     const [userEmail, setUserEmail] = useState("");
-    const [login, setLogin] = useState(false);
     const navigate = useNavigate();
 
     const handleLoginSuccess = (credentialResponse) => {
-        fetch('http://localhost:3001/oauth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(credentialResponse)
-        })
-          .then(response => response.json())
-          .then(data => {
-            const userEmail = data['email'];
-            setUserEmail(userEmail);
-            sessionStorage.setItem("login", true);
-            navigate('/Calendar', { state: { userEmail } });
+      // Grab location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          fetch('http://localhost:3001/oauth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credentialResponse)
           })
-          .catch(error => console.log(error))
+            .then(response => response.json())
+            .then(data => {
+              const userEmail = data['email'];
+              setUserEmail(userEmail);
+              navigate('/Calendar', { state: { userEmail: userEmail, location: { latitude, longitude } } });
+            })
+            .catch(error => console.log(error))
+        })
+      } else {
+        console.log("geolocation did not work");
+      }
     }
 
     const handleLoginError = () => {
