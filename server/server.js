@@ -24,8 +24,8 @@ const client = new MongoClient(uri, {
  * Finds all the available data within the calendar
  */
 app.get('/calendar', async (req, res) => {
-  //const userEmail = req.query.userEmail;
   const userEmail = req.query.userEmail;
+  const location = req.query.location;
 
   // Date Variables
   const currentDate = new Date();
@@ -33,7 +33,7 @@ app.get('/calendar', async (req, res) => {
   const currentYear = currentDate.getFullYear();
 
   try {
-    await dbManager.check_collection(userEmail, currentMonth, currentYear, 'Boston');
+    await dbManager.check_collection(userEmail, currentMonth, currentYear, location);
     const data = await dbManager.grab_collection_data(userEmail, currentMonth, currentYear);
     res.json(data);
   } catch (err) {
@@ -41,7 +41,6 @@ app.get('/calendar', async (req, res) => {
     res.status(500).json({error: "Internal serveral error"});
   }
 });
-
 
 /**
  * Create a new content for calendar day

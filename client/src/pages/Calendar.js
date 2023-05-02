@@ -11,14 +11,12 @@ export default function Calendar() {
 
     const location = useLocation();
     const userEmail = location.state.userEmail;
+    const { latitude, longitude } = location.state.location;
+    const formattedLocation = `${latitude},${longitude}`;
 
     useEffect(() =>{
         const fetchData = async() =>{
-            // const result = await axios.get("http://localhost:3001/calendar?userEmail=jamesw03@bu.edu");
-            // setData(result.data);
-            // setIsLoading(false);
-            // console.log(result.data)
-          axios.get(`http://localhost:3001/calendar?userEmail=${userEmail}`)
+          axios.get(`http://localhost:3001/calendar?userEmail=${userEmail}&location=${formattedLocation}`)
           .then((response) => {
             setData(response.data);
             setIsLoading(false);
