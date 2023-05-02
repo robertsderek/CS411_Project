@@ -5,7 +5,7 @@ export default function CalendarDay({ day, calendarDayItem }) {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate('/AddContent', { state: {calendarDayItem} })
+        navigate('/AddContent', { state: {calendarDayItem, day} })
     }
 
     return (

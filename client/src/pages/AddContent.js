@@ -5,20 +5,15 @@ import axios from "axios";
 export default function AddContent() {
     let map, infoWindow, placesService;
     const [places, setPlaces] = useState([]);
-    const [currentWeather, setCurrentWeather] = useState(null);
-    const [date, setDate] = useState(new Date());
 
     const {state} = useLocation();
-    const {calendarDayItem} = state;
+    const {calendarDayItem, day} = state;
+    const weather = calendarDayItem.weather;
+    const month = calendarDayItem.month;
+    const year = calendarDayItem.year;
+    const email = calendarDayItem.userEmail;
+    const formattedDate = calendarDayItem.formattedDate;
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-        setDate(new Date());
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-  
     useEffect(() => {
       initMap();
     }, []);
@@ -51,10 +46,6 @@ export default function AddContent() {
               infoWindow.open(map);
               map.setCenter(pos);
 
-             const q = `${position.coords.latitude},${position.coords.longitude}`;
-
-             // fetch current weather using the q parameter
-             setCurrentWeather(calendarDayItem.weather)
               // Call getPlaces with the search term
               getPlaces("activities", pos);
             },
@@ -95,17 +86,6 @@ export default function AddContent() {
         });
       });
       setPlaces(placesData);
-  
-      axios.post("http://localhost:3001/api/location", {
-        lat: location.lat,
-        lng: location.lng,
-      })
-      .then(response => {
-        console.log(response.data.message);
-      })
-      .catch(error => {
-        console.error(error);
-      });
     
       // Display the places on the map
       for (let i = 0; i < placesData.length; i++) {
@@ -132,10 +112,6 @@ export default function AddContent() {
               // Handle button click event
                 const addToCalendarButton = document.getElementById('addToCalendarButton');
                 addToCalendarButton.addEventListener('click', () => {
-                    const email = calendarDayItem.userEmail;
-                    const month = (date.getMonth() + 1).toString();
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const year = date.getFullYear().toString();
                     const contentName = place.name;
                     const contentAddress = place.formatted_address;
             
@@ -157,15 +133,15 @@ export default function AddContent() {
 
     return (
         <div>
-        <h1>{"Today is: " + date.toLocaleDateString()}</h1>
-        {currentWeather && (
+        <h1>{"Calendar For: " + formattedDate}</h1>
+        {weather && (
         <div>
-          <p> <b>Current weather: </b> {currentWeather.current?.temp_f} F</p>
-          <p> <b>Feels like:</b> {currentWeather.current?.feelslike_f} F</p>
-          <p> <b>Wind:</b> {currentWeather.current?.wind_mph + " miles per hour in direction " + currentWeather.current?.wind_dir}</p>
+          <p> <b>Current weather: </b> {weather.avgtemp_f} F</p>
+          <p> <b>Condition:</b> {weather.condition?.text}</p>
+          <p> <b>Max Wind:</b> {weather.maxwind_mph + " miles per hour in direction "}</p>
         </div>
       )}
-        <div id="map" style={{ height: "530px", width: "100%" }}></div>
+        <div id="map" style={{ height: "75vh", width: "100%" }}></div>
         </div>
     );
       
