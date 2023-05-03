@@ -1,6 +1,7 @@
 import {  React, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./AddContent.css";
 
 export default function AddContent() {
     let map, infoWindow, placesService;
@@ -47,7 +48,7 @@ export default function AddContent() {
               map.setCenter(pos);
 
               // Call getPlaces with the search term
-              getPlaces("activities", pos);
+              getPlaces("entertainment", pos);
             },
             () => {
               handleLocationError(true, infoWindow, map.getCenter());
@@ -138,11 +139,11 @@ export default function AddContent() {
 
     return (
         <div>
-          <button onClick={handleClick}>Back to Calendar</button>
+          <button class="goBack" onClick={handleClick}>Back to Calendar</button>
         <h1>{"Calendar For: " + formattedDate}</h1>
         {weather && (
         <div>
-          <p> <b>Current weather: </b> {weather.avgtemp_f} F</p>
+          <p> <b>Temperature:</b> {weather.avgtemp_f} F</p>
           <p> <b>Condition:</b> {weather.condition?.text}</p>
           <p> <b>Max Wind:</b> {weather.maxwind_mph + " miles per hour in direction "}</p>
         </div>

@@ -16,7 +16,7 @@ body {
   .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background-color: #ccc;
+    background-color: #eaeaead3;
     font-family: Arial, sans-serif;
     font-size: 16px;
     text-align: center;
@@ -25,7 +25,7 @@ body {
   .calendarDay {
     height: 19vh;
     overflow-y: auto;
-    background-color: antiquewhite;
+    background-color: white;
     padding: 0 0.5em;
     box-sizing: border-box;
     outline: 1px solid black;
