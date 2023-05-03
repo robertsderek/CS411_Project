@@ -13,7 +13,6 @@ export default function Calendar() {
     const userEmail = location.state.userEmail;
     const { latitude, longitude } = location.state.location;
     const formattedLocation = `${latitude},${longitude}`;
-    console.log(formattedLocation);
 
     useEffect(() =>{
         const fetchData = async() =>{
@@ -31,7 +30,7 @@ export default function Calendar() {
         const currentMonth = now.toLocaleString('default', {month: 'long'});
         const currentYear = now.getFullYear();
         setCurrentMonthYear(`${currentMonth} ${currentYear}`);
-    }, [userEmail]);
+    }, [userEmail, formattedLocation]);
 
 
     return (

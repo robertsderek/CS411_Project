@@ -1,5 +1,5 @@
 import {  React, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function AddContent() {
@@ -131,8 +131,14 @@ export default function AddContent() {
       }
     }
 
+    const navigate = useNavigate();
+    const handleClick = () => {
+      navigate(-1);
+    }
+
     return (
         <div>
+          <button onClick={handleClick}>Back to Calendar</button>
         <h1>{"Calendar For: " + formattedDate}</h1>
         {weather && (
         <div>
