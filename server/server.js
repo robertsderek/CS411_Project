@@ -26,7 +26,6 @@ const client = new MongoClient(uri, {
 app.get('/calendar', async (req, res) => {
   const userEmail = req.query.userEmail;
   const location = req.query.location;
-
   // Date Variables
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth() + 1;

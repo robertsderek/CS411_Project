@@ -21,12 +21,10 @@ const db = client.db();
  */
 async function check_collection(email, month, year, location) { 
   // Check to see if the user exists in the db
-  const existingUser = await db.collection('forecast').findOne({ userEmail: email });
-  const num_days = await utils.daysInMonth(month, year);
+  const existingUser = await db.collection("forecast").findOne({ userEmail: email });
 
   if (!existingUser) {
     await create_month_collection(email, month, year, location);
-
   } else {
     // Check if the collection for current month exist
     const existingMonth = await db.collection('forecast').find({userEmail: email, month: month, year: year}).toArray();
@@ -46,39 +44,40 @@ async function check_collection(email, month, year, location) {
  * Automatically create a month based on given API input from weather as well as an empty content for future update.
  * @param {*} collectionName 
  */
-async function create_month_collection(userEmail, month, year, city) {
+async function create_month_collection(userEmail, month, year, location) {
   const num_days = await utils.daysInMonth(month, year);
 
   for (var i = 0; i < num_days; i++) {
-    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
+    const day = ('0' + (i + 1)).slice(-2);
     const formattedDate = `${year}-${month}-${day}`;
-
-    // check if a forecast already exists for this date
-    const forecastExists = await db.collection("forecast").findOne({formattedDate});
+    
+    const forecastExists = await db.collection("forecast").findOne({userEmail, formattedDate});    
 
     if (!forecastExists) {
-      const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
+      const weather = await weatherAPI.getWeatherAtDate(formattedDate, location);
 
       const forecast = {
         userEmail,
         month,
         year,
         formattedDate,
-        city,
+        location,
         weather
       }
+
       await db.collection("forecast").insertOne(forecast);
     }
 
+
     // check if a content already exists for this date
-    const contentExists = await db.collection("content").findOne({formattedDate});
+    const contentExists = await db.collection("content").findOne({userEmail, formattedDate});
 
     if (!contentExists) {
       const content = {
         userEmail,
         month,
         year,
-        city,
+        location,
         formattedDate,
         content: {
           name: "",
@@ -196,7 +195,7 @@ async function grab_collection_data(userEmail, month, year) {
 
 
 // console.log(grab_collection_data('james@gmail.com', 4, 2023));
-// check_collection('james@gmail.com', 5, 2023, 'boston');
+// check_collection('james@bu.com', 5, 2023, '42.3507377,-71.108586');
 // updateWeather('james@gmail.com', 4, 2023, 'boston');
 // set_content('james@gmail.com', 4, 29, 2023, 'name test', 'address test');
 
