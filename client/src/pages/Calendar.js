@@ -13,6 +13,7 @@ export default function Calendar() {
     const userEmail = location.state.userEmail;
     const { latitude, longitude } = location.state.location;
     const formattedLocation = `${latitude},${longitude}`;
+    console.log(formattedLocation);
 
     useEffect(() =>{
         const fetchData = async() =>{
