@@ -1,23 +1,18 @@
-# CS411_Project
-A repository for our CS411 Project
+# CS411 Project
 
-## Installation
-Install the dependencies
-```
-npm install
-```
+By: Derek Roberts, James Wong, Kevin Wu
 
-To Run Back-End
-```
-npm run server
-```
+## Overview
 
-To Run Front-End
-```
-npm run client
-```
+This repository contains the code for our CS411 project. We created a Calendar Activity Planner!
 
-To Run Both
-```
-npm run dev
-```
+## Demo Video
+
+Check out our [demo video](https://youtu.be/_89C_2mAZuw) to see our project in action!
+
+## Architecture
+
+**Database:** MongoDB (stores user's calendar and activities) <br>
+**API's:** Google Maps/Places & Weather <br>
+**Third-party Authentication:** Google <br> 
+RESTful Interface
