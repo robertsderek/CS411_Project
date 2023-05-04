@@ -1,8 +1,32 @@
 .App {
   text-align: center;
+  padding-top: 50px;
+  background-color: #eaeaead3;
+  
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .credit {
-  font-style: italic;
+  font-size: 0.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 }
 
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  background-color: #5f9ea0;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

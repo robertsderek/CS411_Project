@@ -1,0 +1,24 @@
+.Login {
+    background-color: #eaeaead3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 40rem;
+  }
+  
+  button {
+    padding: 1rem;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    background-color: #4285F4;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  

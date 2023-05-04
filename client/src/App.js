@@ -9,7 +9,7 @@ function App() {
     <div className='App'>
       <h1>Welcome to Calendar!</h1>
       <h3>Manage events, scheduling, and your calendar!</h3>
-      <h5 className='credit'>By Dereck, James, and Kevin</h5>
+      <h5 className='credit'>By Derek, James, and Kevin</h5>
       <Link to="/Login">
         <button type="button">
           Login

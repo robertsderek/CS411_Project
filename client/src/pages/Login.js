@@ -3,7 +3,7 @@ import { GoogleLogin , GoogleOAuthProvider} from '@react-oauth/google';
 import { OAUTH_API_KEY } from './oauth_credentials'
 import axios from 'axios'
 import { useNavigate } from "react-router-dom";
-
+import "./Login.css"
 
 export default function Login(){
     const [userEmail, setUserEmail] = useState("");
@@ -38,7 +38,7 @@ export default function Login(){
 
     return(
       <div className="Login">
-      
+        <h1>Login with Google:</h1>
         <GoogleOAuthProvider clientId={OAUTH_API_KEY}>
           <GoogleLogin
             text="Login with google"
