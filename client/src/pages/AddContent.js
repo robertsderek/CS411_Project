@@ -107,11 +107,13 @@ export default function AddContent() {
                   <p>${place.website}</p>
                   <p>Rating: ${place.rating}/5</p>
                   <button id="addToCalendarButton">Add to Calendar</button>
+                  <span id="successMessage" style="display:none; color:green;">Successfully added to your calendar!</span>
                 </div>
               `);
               infoWindow.open(map, marker);
               // Handle button click event
                 const addToCalendarButton = document.getElementById('addToCalendarButton');
+                const successMessage = document.getElementById('successMessage');
                 addToCalendarButton.addEventListener('click', () => {
                     const contentName = place.name;
                     const contentAddress = place.formatted_address;
@@ -119,6 +121,8 @@ export default function AddContent() {
                     axios.post(`http://localhost:3001/calendar/new?email=${email}&month=${month}&day=${day}&year=${year}&contentName=${contentName}&contentAddress=${contentAddress}`)
                     .then(response => {
                       console.log(response.data.message);
+                      addToCalendarButton.style.display = 'none';
+                      successMessage.style.display = 'inline';
                     })
                     .catch(error => {
                       console.error(error);
