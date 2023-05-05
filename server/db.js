@@ -46,49 +46,61 @@ async function check_collection(email, month, year, location) {
  */
 async function create_month_collection(userEmail, month, year, location) {
   const num_days = await utils.daysInMonth(month, year);
+  const forecastPromises = [];
+  const contentPromises = [];
 
-  for (var i = 0; i < num_days; i++) {
-    const day = ('0' + (i + 1)).slice(-2);
-    const formattedDate = `${year}-${month}-${day}`;
+  for (let day = 1; day <= num_days; day++) {
+    const formattedDate = `${year}-${month}-${day.toString().padStart(2, '0')}`;
     
-    const forecastExists = await db.collection("forecast").findOne({userEmail, formattedDate});    
+    forecastPromises.push(db.collection("forecast").findOne({userEmail, formattedDate})
+      .then(forecastExists => {
+        if (!forecastExists) {
+          return weatherAPI.getWeatherAtDate(formattedDate, location)
+            .then(weather => {
+              const forecast = {
+                userEmail,
+                month,
+                year,
+                formattedDate,
+                location,
+                weather
+              }
+              return forecast;
+            });
+        }
+      }));
 
-    if (!forecastExists) {
-      const weather = await weatherAPI.getWeatherAtDate(formattedDate, location);
+    contentPromises.push(db.collection("content").findOne({userEmail, formattedDate})
+      .then(contentExists => {
+        if (!contentExists) {
+          const content = {
+            userEmail,
+            month,
+            year,
+            location,
+            formattedDate,
+            content: {
+              name: "",
+              address: ""
+            },
+          }
+          return content;
+        }
+      }));
+  }
 
-      const forecast = {
-        userEmail,
-        month,
-        year,
-        formattedDate,
-        location,
-        weather
-      }
+  const forecasts = await Promise.all(forecastPromises).then(results => results.filter(Boolean));
+  const contents = await Promise.all(contentPromises).then(results => results.filter(Boolean));
 
-      await db.collection("forecast").insertOne(forecast);
-    }
+  if (forecasts.length > 0) {
+    await db.collection("forecast").insertMany(forecasts);
+  }
 
-
-    // check if a content already exists for this date
-    const contentExists = await db.collection("content").findOne({userEmail, formattedDate});
-
-    if (!contentExists) {
-      const content = {
-        userEmail,
-        month,
-        year,
-        location,
-        formattedDate,
-        content: {
-          name: "",
-          address: ""
-        },
-      }
-
-      await db.collection("content").insertOne(content);
-    }
+  if (contents.length > 0) {
+    await db.collection("content").insertMany(contents);
   }
 }
+
 
 /**
  * Updates the weather within the database
@@ -99,22 +111,33 @@ async function create_month_collection(userEmail, month, year, location) {
  */
 async function updateWeather(email, month, year, city) {
   const num_days = await utils.daysInMonth(month, year);
+  const dates = [];
 
-  for (var i = 0; i < num_days; i++) {
-    const day = ('0' + (i + 1)).slice(-2); // increment i by 1 to start at day 1
-    const formattedDate = `${year}-${month}-${day}`;
-    const weather = await weatherAPI.getWeatherAtDate(formattedDate, city);
-
-    // check database collection
-    const collection = await db.collection('forecast').findOne({userEmail: email})
-    if (collection.weather == "No Data" && weather != "No Data") {
-      await db.collection('forecast').updateOne(
-        {userEmail: email, formattedDate: formattedDate},
-        {$set: {weather: weather}}
-      );
-    }
+  for (let day = 1; day <= num_days; day++) {
+    const formattedDate = `${year}-${month}-${day.toString().padStart(2, '0')}`;
+    dates.push(formattedDate);
   }
+
+  const existingForecasts = await db.collection('forecast').find({userEmail: email, formattedDate: {$in: dates}}).toArray();
+
+  const forecastsToUpdate = existingForecasts.filter(forecast => forecast.weather === "No Data");
+
+  const forecastUpdates = forecastsToUpdate.map(forecast => {
+    const formattedDate = forecast.formattedDate;
+    return weatherAPI.getWeatherAtDate(formattedDate, city)
+      .then(weather => {
+        if (weather !== "No Data") {
+          return db.collection('forecast').updateOne(
+            {userEmail: email, formattedDate: formattedDate},
+            {$set: {weather: weather}}
+          );
+        }
+      });
+  });
+
+  await Promise.all(forecastUpdates);
 }
+
 
 /**
  * Sets the content of a certain date
